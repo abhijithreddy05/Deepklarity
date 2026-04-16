@@ -7,7 +7,7 @@ import Preview from './components/Preview';
 import { useDebounce } from './hooks/useDebounce';
 import { ThemeContext } from './context/ThemeContext';
 
-const API_URL = 'http://localhost:5005/api/notes';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5005/api/notes';
 
 function App() {
   const [notes, setNotes] = useState([]);
