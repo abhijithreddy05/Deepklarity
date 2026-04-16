@@ -32,7 +32,7 @@ class StructuredRecipe(BaseModel):
     shopping_list: Dict[str, List[str]] = Field(description="Shopping list grouped by generic category keys (e.g., 'dairy', 'produce', 'pantry', 'bakery')")
     related_recipes: List[str] = Field(description="Exactly 3 related recipes that pair well")
 
-RECIPE_EXTRACTION_PROMPT = \"\"\"You are an expert chef and recipe data extractor AI.
+RECIPE_EXTRACTION_PROMPT = """You are an expert chef and recipe data extractor AI.
 Below is the raw, unformatted text scraped from a recipe blog page.
 
 Your task is to carefully analyze this text and extract all relevant recipe information.
@@ -46,12 +46,12 @@ You MUST follow the requested JSON schema accurately.
 
 RAW RECIPE TEXT:
 {scraped_text}
-\"\"\"
+"""
 
 def process_recipe_text(text: str) -> dict:
-    \"\"\"
+    """
     Sends unstructured text to Gemini and retrieves a structured Recipe object using LangChain.
-    \"\"\"
+    """
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise Exception("GEMINI_API_KEY environment variable is not set. Please provide it in the backend/.env file.")
