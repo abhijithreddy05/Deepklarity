@@ -3,6 +3,8 @@ from typing import List, Dict, Optional
 from pydantic import BaseModel, Field
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
+from langchain.output_parsers import PydanticOutputParser
+from dotenv import load_dotenv
 
 # Pydantic schemas for structured output
 
@@ -44,11 +46,11 @@ Provide 3 related recipe suggestions.
 
 You MUST follow the requested JSON schema accurately.
 
+{format_instructions}
+
 RAW RECIPE TEXT:
 {scraped_text}
 """
-
-from dotenv import load_dotenv
 
 def process_recipe_text(text: str) -> dict:
     """
@@ -66,11 +68,16 @@ def process_recipe_text(text: str) -> dict:
         google_api_key=api_key
     )
     
-    # LangChain v0.1+ native structured output capability:
-    structured_llm = llm.with_structured_output(StructuredRecipe)
+    parser = PydanticOutputParser(pydantic_object=StructuredRecipe)
     
-    prompt = PromptTemplate.from_template(RECIPE_EXTRACTION_PROMPT)
-    chain = prompt | structured_llm
+    prompt = PromptTemplate(
+        template=RECIPE_EXTRACTION_PROMPT,
+        input_variables=["scraped_text"],
+        partial_variables={"format_instructions": parser.get_format_instructions()}
+    )
     
-    result = chain.invoke({"scraped_text": text[:35000]}) # Limit tokens slightly if page is massive
+    chain = prompt | llm | parser
+    
+    # Run the chain!
+    result = chain.invoke({"scraped_text": text[:35000]})
     return result.model_dump()
