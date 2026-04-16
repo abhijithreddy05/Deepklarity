@@ -1,74 +1,70 @@
-# Markdown Notes Application 📝
+# DeepKlarity Recipe Extractor & Meal Planner 🍲
 
-A full-stack, responsive, and beautifully designed Markdown Notes Application. Built with **React** (via Vite), **Node.js** (Express), and **SQLite** to meet the requirements of the SDE assignment.
-
-## ✨ Features
-
-- **Live Split-Screen Preview**: See rendered Markdown in real-time.
-- **Auto-save (Debounced)**: Avoids API spam by automatically saving exactly 1 second after typing stops.
-- **Full CRUD operations**: Create, read, update, delete notes effortlessly.
-- **Search Notes**: Find notes using the search bar instantly.
-- **Dark Mode**: Switch between Dark and Light modes on the fly.
-- **Responsive Design**: Auto-adjusting UI that works beautifully across mobile and desktop.
-- **No external DB required**: Utilizing SQLite which sets up automatically and requires no separate server.
+This project fulfills the DeepKlarity Technologies assignment using a **React Frontend** and a **Python FastAPI Backend**, strictly avoiding Node.js for backend processing. It uses **PostgreSQL**, **BeautifulSoup** for HTML scraping, and **LangChain + Gemini API** for LLM generation of structured JSON data.
 
 ## ⚙️ Tech Stack
-- **Frontend**: React.js 18, Vite, `react-markdown`, `lucide-react`, Vanilla CSS
-- **Backend**: Node.js, Express.js
-- **Database**: SQLite3 (`sqlite3`)
-
----
+- **Frontend**: React.js (Vite), Pure CSS with Premium Aesthetics.
+- **Backend**: Python 3, FastAPI, Uvicorn.
+- **Database**: PostgreSQL (via SQLAlchemy).
+- **Scraping**: BeautifulSoup (bs4).
+- **LLM Integration**: LangChain & Gemini (langchain-google-genai).
 
 ## 🚀 Setup Instructions
 
-### 1. Prerequisites
-- **Node.js**: `v16.14.0` or higher
-- **npm** (comes with Node)
-
-### 2. Setting Up the Backend
-1. Open a terminal and navigate to the backend directory:
+### 1. Backend (Python/FastAPI) setup:
+1. Navigate to the backend directory:
    ```bash
    cd ./backend
    ```
-2. Install dependencies:
+2. Create your virtual environment and install dependencies:
    ```bash
-   npm install
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
    ```
-3. Set environment variables (Optional, defaults to 5005):
+3. Set your environment variables (create a `.env` file inside `backend/`!):
    ```bash
-   touch .env
-   echo "PORT=5005" >> .env
+   # backend/.env
+   GEMINI_API_KEY="AIzaSy...your-gemini-key"
+   DATABASE_URL="postgresql://user:password@host/db" # Fallbacks to SQLite recipes.db if empty
    ```
-4. Start the backend server:
+4. Start the server (runs on `http://localhost:8000`):
    ```bash
-   # In development
-   node server.js
+   uvicorn main:app --reload
    ```
-*(Note: A `database.sqlite` file is automatically generated in the `backend/` directory upon first launch and the `notes` table is created. Do not worry about running separate sync or migration commands.)*
 
-### 3. Setting Up the Frontend
-1. Open a *new* terminal and navigate to the frontend directory:
+### 2. Frontend (React/Vite) setup:
+1. Open a new terminal and navigate to the frontend directory:
    ```bash
    cd ./frontend
    ```
-2. Install dependencies:
+2. Install dependencies (we still use npm to build the React vite app!):
    ```bash
    npm install
    ```
-3. Start the application:
+3. Run the development server (runs on `http://localhost:5173`):
    ```bash
    npm run dev
    ```
 
-### 4. Running the App
-- The application will be running locally at `http://localhost:5173`.
-- Make sure both the **backend** and **frontend** terminal instances are simultaneously running.
+## 🌐 API Endpoints
 
----
+### `POST /api/extract`
+Accepts a generic recipe blog URL, scrapes the content, uses LangChain to generate structured JSON data, saves it to PostgreSQL, and returns the response.
+- **Body**: `{"url": "https://url.com"}`
 
-## 🎨 Design Decisions
+### `GET /api/history`
+Returns a list of all extracted recipes saved in the PostgreSQL database, ordered by creation date.
 
-- **Vite over CRA**: `create-react-app` is outdated, sluggish, and generally discouraged by the core React community in modern stacks. I chose Vite for blazing-fast HMR and significantly faster build times.
-- **Custom Theming**: Rather than relying on a heavy UI library like Tailwind, the whole interface leverages elegant, pure vanilla CSS variables, demonstrating firm mastery over visual implementation and design fundamentals.
-- **SQLite Database**: Keeping the database local eliminates the need for reviewers to create a `.env` postgres uri and ensures quick testability. 
-- **Debounced Save hook**: Instead of building convoluted context, a clean `useDebounce` hook listens to UI changes, maintaining synchronization organically.
+## 📝 Testing Steps
+1. Make sure both your Gemini API Key and your Database URL are configured.
+2. Run backend and frontend side-by-side.
+3. Open the UI at `http://localhost:5173`.
+4. Enter `https://www.allrecipes.com/recipe/23891/grilled-cheese-sandwich/` into Tab 1.
+5. Click Extract and wait for the LLM inference step. The resulting rich UI will appear shortly after.
+6. Switch to Tab 2 to see the History Table populated with your recent extractions.
+
+## 📂 Deliverables Included
+- **`prompts/`**: Contains the precise LangChain extraction markdown templates.
+- **`sample_data/`**: Contains generated JSON examples.
+- **`backend/`**: Strict FastAPI Python project per the assignment guidelines.
