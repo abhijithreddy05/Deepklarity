@@ -48,10 +48,13 @@ RAW RECIPE TEXT:
 {scraped_text}
 """
 
+from dotenv import load_dotenv
+
 def process_recipe_text(text: str) -> dict:
     """
     Sends unstructured text to Gemini and retrieves a structured Recipe object using LangChain.
     """
+    load_dotenv()
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise Exception("GEMINI_API_KEY environment variable is not set. Please provide it in the backend/.env file.")
@@ -59,7 +62,8 @@ def process_recipe_text(text: str) -> dict:
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.5-flash",
         temperature=0.3,
-        max_retries=2
+        max_retries=2,
+        google_api_key=api_key
     )
     
     # LangChain v0.1+ native structured output capability:
