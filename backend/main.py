@@ -4,10 +4,10 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import List
 
-from .database import engine, Base, get_db
-from . import models
-from .services.scraper import scrape_recipe_page
-from .services.llm_processor import process_recipe_text
+from database import engine, Base, get_db
+import models
+from services.scraper import scrape_recipe_page
+from services.llm_processor import process_recipe_text
 
 # Create database tables (if they don't exist)
 Base.metadata.create_all(bind=engine)
